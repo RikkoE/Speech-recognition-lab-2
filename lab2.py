@@ -3,6 +3,36 @@ import matplotlib.pyplot as plt
 import numpy as np 
 from tools2 import *
 
+def gmmscore(model, tidigits):
+
+    res = np.zeros(shape=(44, 11))
+
+    for j in range(0, 44):
+        tid = tidigits[j]['mfcc']
+        for i in range(0, 11):
+            modelGmm = model[i]['gmm']
+
+            cvGmm = modelGmm['covars']
+            muGmm = modelGmm['means']
+
+            gmmobs = log_multivariate_normal_density_diag(tid, muGmm, cvGmm)
+
+            weights = modelGmm['weights']
+
+            res[j][i] = pro.gmmloglik(gmmobs, weights)
+
+    return res
+
+def gmmMinimum(scorematrix):
+    gmmwinner = scorematrix
+
+    for i in range(0, 44):
+        minimum = np.argmax(scorematrix[i])
+        gmmwinner[i] = 0
+        gmmwinner[i][minimum] = -4000
+
+    return gmmwinner
+
 ################################################
 #        Load necessary variables              #
 ################################################
@@ -53,11 +83,26 @@ gloglik = pro.gmmloglik(gmmobs, weights)
 print "Exgmmlog: ", exgmmlog
 print "Gmm log lik: ", gloglik
 
-#random comment
+
+scorematrix = gmmscore(models, tidigits)
+gmmwinner = gmmMinimum(scorematrix)
+
+
+################################################
+#           HMM log likelihood                 #
+################################################
+
+
+
 
 ################################################
 #               Plot results                   #
 ################################################
+
+#plt.plot(scorematrix)
+
+plt.imshow(gmmwinner.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+plt.colorbar()
 
 
 #ax = plt.subplot(2, 1, 1)
