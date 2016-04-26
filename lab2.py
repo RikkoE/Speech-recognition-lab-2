@@ -48,6 +48,8 @@ exgmmobs = example['gmm_obsloglik']
 
 exgmmlog = example['gmm_loglik']
 
+exhmmalpha = example['hmm_logalpha']
+
 ################################################
 #         HMM Observed log likelihood          #
 ################################################
@@ -84,16 +86,22 @@ print "Exgmmlog: ", exgmmlog
 print "Gmm log lik: ", gloglik
 
 
-scorematrix = gmmscore(models, tidigits)
-gmmwinner = gmmMinimum(scorematrix)
+#scorematrix = gmmscore(models, tidigits)
+#gmmwinner = gmmMinimum(scorematrix)
 
 
 ################################################
 #           HMM log likelihood                 #
 ################################################
 
+startprob = modelHmm['startprob']
+transmat = modelHmm['transmat']
 
+#logalpha = pro.forward(hmmobs, startprob, transmat)
 
+pro.forward(hmmobs, startprob, transmat)
+
+print "example: ", exhmmalpha
 
 ################################################
 #               Plot results                   #
@@ -101,12 +109,12 @@ gmmwinner = gmmMinimum(scorematrix)
 
 #plt.plot(scorematrix)
 
-plt.imshow(gmmwinner.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
-plt.colorbar()
+#plt.imshow(exhmmalpha.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+#plt.colorbar()
 
 
 #ax = plt.subplot(2, 1, 1)
-#ax.imshow(exgmmobs.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+#ax.imshow(exhmmalpha.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
 
 #ax = plt.subplot(2, 1, 2)
 #ax.imshow(gmmobs.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')

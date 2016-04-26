@@ -35,6 +35,19 @@ def forward(log_emlik, log_startprob, log_transmat):
         forward_prob: NxM array of forward log probabilities for each of the M states in the model
     """
 
+    rows, columns = log_emlik.shape
+
+    alpha = np.zeros(shape=(rows, columns))
+
+    alpha[0] = np.log(log_startprob) + log_emlik[0]
+
+    for n in range(1, rows):
+        for j in range(0, columns):
+            alpha[n][j] = logsumexp(alpha[n-1] + np.log(log_transmat[j])) + log_emlik[n][j]
+            #alpha[n][j] = alpha[n-1][i] + log_transmat[i]
+
+    print "alpha: ", alpha
+
 def backward(log_emlik, log_startprob, log_transmat):
     """Backward probabilities in log domain.
 
