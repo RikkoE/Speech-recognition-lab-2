@@ -53,6 +53,8 @@ gloglik = pro.gmmloglik(gmmobs, weights)
 print "Exgmmlog: ", exgmmlog
 print "Gmm log lik: ", gloglik
 
+#random comment
+
 ################################################
 #               Plot results                   #
 ################################################
