@@ -5,13 +5,24 @@ import tools2 as tool
 from sklearn import mixture
 
 
+################################################
+#        Load necessary variables              #
+################################################
+
 example = np.load('lab2_example.npz')['example'].item()
 tidigits = np.load('lab2_tidigits.npz')['tidigits']
 models = np.load('lab2_models.npz')['models']
 
 exmfcc = example['mfcc']
+
 exhmmobs = example['hmm_obsloglik']
 exgmmobs = example['gmm_obsloglik']
+
+exgmmlog = example['gmm_loglik']
+
+################################################
+#         HMM Observed log likelihood          #
+################################################
 
 modelHmm = models[0]['hmm']
 modkeyHmm = modelHmm.keys()
@@ -21,6 +32,9 @@ muHmm = modelHmm['means']
 
 hmmobs = mixture.log_multivariate_normal_density(exmfcc, muHmm, cvHmm, 'diag')
 
+################################################
+#        GMM Observed log likelihood           #
+################################################
 
 modelGmm = models[0]['gmm']
 modkeyGmm = modelGmm.keys()
@@ -30,11 +44,22 @@ muGmm = modelGmm['means']
 
 gmmobs = mixture.log_multivariate_normal_density(exmfcc, muGmm, cvGmm, 'diag')
 
+################################################
+#           GMM log likelihood                 #
+################################################
 
-ax = plt.subplot(2, 1, 1)
-ax.imshow(exgmmobs.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+weights = modelGmm['weights']
 
-ax = plt.subplot(2, 1, 2)
-ax.imshow(gmmobs.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+################################################
+#               Plot results                   #
+################################################
+
+print weights
+
+#ax = plt.subplot(2, 1, 1)
+#ax.imshow(exgmmlog.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+
+#ax = plt.subplot(2, 1, 2)
+#ax.imshow(gmmobs.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
 
 plt.show()
