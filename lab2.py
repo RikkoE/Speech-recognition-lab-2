@@ -1,9 +1,7 @@
 import proto2 as pro
 import matplotlib.pyplot as plt
 import numpy as np 
-import tools2 as tool
-from sklearn import mixture
-
+from tools2 import *
 
 ################################################
 #        Load necessary variables              #
@@ -30,7 +28,7 @@ modkeyHmm = modelHmm.keys()
 cvHmm = modelHmm['covars']
 muHmm = modelHmm['means']
 
-hmmobs = mixture.log_multivariate_normal_density(exmfcc, muHmm, cvHmm, 'diag')
+hmmobs = log_multivariate_normal_density_diag(exmfcc, muHmm, cvHmm)
 
 ################################################
 #        GMM Observed log likelihood           #
@@ -42,7 +40,7 @@ modkeyGmm = modelGmm.keys()
 cvGmm = modelGmm['covars']
 muGmm = modelGmm['means']
 
-gmmobs = mixture.log_multivariate_normal_density(exmfcc, muGmm, cvGmm, 'diag')
+gmmobs = log_multivariate_normal_density_diag(exmfcc, muGmm, cvGmm)
 
 ################################################
 #           GMM log likelihood                 #
@@ -50,14 +48,20 @@ gmmobs = mixture.log_multivariate_normal_density(exmfcc, muGmm, cvGmm, 'diag')
 
 weights = modelGmm['weights']
 
+gloglik = pro.gmmloglik(gmmobs, weights)
+
+print "Exgmmlog: ", exgmmlog
+print "Gmm log lik: ", gloglik
+
+#random comment
+
 ################################################
 #               Plot results                   #
 ################################################
 
-print weights
 
 #ax = plt.subplot(2, 1, 1)
-#ax.imshow(exgmmlog.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+#ax.imshow(exgmmobs.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
 
 #ax = plt.subplot(2, 1, 2)
 #ax.imshow(gmmobs.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
