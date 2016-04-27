@@ -82,8 +82,8 @@ weights = modelGmm['weights']
 
 gloglik = pro.gmmloglik(gmmobs, weights)
 
-print "Exgmmlog: ", exgmmlog
-print "Gmm log lik: ", gloglik
+#print "Exgmmlog: ", exgmmlog
+#print "Gmm log lik: ", gloglik
 
 
 #scorematrix = gmmscore(models, tidigits)
@@ -99,9 +99,9 @@ transmat = modelHmm['transmat']
 
 #logalpha = pro.forward(hmmobs, startprob, transmat)
 
-pro.forward(hmmobs, startprob, transmat)
+#ALPHA FORWARD HMM
+alpha = pro.forward(hmmobs, startprob, transmat)
 
-print "example: ", exhmmalpha
 
 ################################################
 #               Plot results                   #
@@ -113,10 +113,10 @@ print "example: ", exhmmalpha
 #plt.colorbar()
 
 
-#ax = plt.subplot(2, 1, 1)
-#ax.imshow(exhmmalpha.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+ax = plt.subplot(2, 1, 1)
+ax.imshow(exhmmalpha.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
 
-#ax = plt.subplot(2, 1, 2)
-#ax.imshow(gmmobs.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+ax = plt.subplot(2, 1, 2)
+ax.imshow(alpha.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
 
 plt.show()
