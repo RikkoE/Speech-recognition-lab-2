@@ -33,6 +33,57 @@ def gmmMinimum(scorematrix):
 
     return gmmwinner
 
+def forwardScore(model, tidigits):
+
+    res = np.zeros(shape=(44, 11))
+
+    for j in range(0, 44):
+        tid = tidigits[j]['mfcc']
+        for i in range(0, 11):
+
+            modelHmm = model[i]['hmm']
+
+            cvHmm = modelHmm['covars']
+            muHmm = modelHmm['means']
+
+            hmmobs = log_multivariate_normal_density_diag(tid, muHmm, cvHmm)
+
+            startprob = modelHmm['startprob']
+            transmat = modelHmm['transmat']
+
+            alpha = pro.forward(hmmobs, startprob, transmat)
+
+            rows, columns = alpha.shape
+
+            res[j][i] = logsumexp(alpha[rows-1])
+
+    return res
+
+def viterbiScore(model, tidigits):
+
+    res = np.zeros(shape=(44, 11))
+
+    for j in range(0, 44):
+        tid = tidigits[j]['mfcc']
+        for i in range(0, 11):
+
+            modelHmm = model[i]['hmm']
+
+            cvHmm = modelHmm['covars']
+            muHmm = modelHmm['means']
+
+            hmmobs = log_multivariate_normal_density_diag(tid, muHmm, cvHmm)
+
+            startprob = modelHmm['startprob']
+            transmat = modelHmm['transmat']
+
+            vit = pro.viterbi(hmmobs, startprob, transmat)
+
+            res[j][i] = vit[0]
+
+    return res
+
+
 ################################################
 #        Load necessary variables              #
 ################################################
@@ -49,6 +100,9 @@ exgmmobs = example['gmm_obsloglik']
 exgmmlog = example['gmm_loglik']
 
 exhmmalpha = example['hmm_logalpha']
+exhmmlog = example['hmm_loglik']
+
+exhmmvlog = example['hmm_vloglik']
 
 ################################################
 #         HMM Observed log likelihood          #
@@ -82,8 +136,8 @@ weights = modelGmm['weights']
 
 gloglik = pro.gmmloglik(gmmobs, weights)
 
-print "Exgmmlog: ", exgmmlog
-print "Gmm log lik: ", gloglik
+#print "Exgmmlog: ", exgmmlog
+#print "Gmm log lik: ", gloglik
 
 
 #scorematrix = gmmscore(models, tidigits)
@@ -99,9 +153,24 @@ transmat = modelHmm['transmat']
 
 #logalpha = pro.forward(hmmobs, startprob, transmat)
 
-pro.forward(hmmobs, startprob, transmat)
+#ALPHA FORWARD HMM
+#alpha = pro.forward(hmmobs, startprob, transmat)
 
-print "example: ", exhmmalpha
+
+#scoref = forwardScore(models, tidigits)
+#hmmwinner = gmmMinimum(scoref)
+
+
+################################################
+#           HMM Viterbi likelihood             #
+################################################
+
+pro.viterbi(hmmobs, startprob, transmat)
+
+vitScore = viterbiScore(models, tidigits)
+
+vitWinner = gmmMinimum(vitScore)
+
 
 ################################################
 #               Plot results                   #
@@ -109,14 +178,16 @@ print "example: ", exhmmalpha
 
 #plt.plot(scorematrix)
 
-#plt.imshow(exhmmalpha.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
-#plt.colorbar()
+plt.imshow(vitWinner.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+plt.colorbar()
 
+print "Hmm vlog score: ", exhmmvlog[0]
+print "Hmm vlog path: ", exhmmvlog[1]
 
 #ax = plt.subplot(2, 1, 1)
 #ax.imshow(exhmmalpha.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
 
 #ax = plt.subplot(2, 1, 2)
-#ax.imshow(gmmobs.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
+#ax.imshow(alpha.T, interpolation = 'nearest', aspect = 'auto', origin = 'lower')
 
 plt.show()
